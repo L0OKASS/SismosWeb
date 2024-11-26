@@ -1,8 +1,11 @@
-#requests
-pandas
-matplotlob
 streamlit
-streamlit-option-menu
--r requirements.txt
-snowflake-connector-python
-plotly.express
+pandas
+plotly
+#requests
+#pandas
+#matplotlob
+#streamlit
+#streamlit-option-menu
+#-r requirements.txt
+#snowflake-connector-python
+#plotly.express
