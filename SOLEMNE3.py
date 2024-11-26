@@ -140,25 +140,10 @@ elif selected == "Contacto":
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
 
 with st.sidebar:
-    ### Agregar el logo de la universidad con un borde difuso ###
-    st.markdown("""
-    <style>
-    .logo-container {
-        width: 100%;
-        text-align: center;
-        padding: 10px;
-        border-radius: 20px;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image("https://universidadsansebastian.hiringroom.com/data/accounts/universidadsansebastian/microsite/5ed34d01564648ad52c7afd2d49a0909.png", width=200)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    ### Menú principal ###
+    # Agregar el logo de la universidad
+    st.image("https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Universidad_San_Sebasti%C3%A1n_%28logo%29.png/600px-Universidad_San_Sebasti%C3%A1n_%28logo%29.png", 
+             width=200)
+    # Menú principal
     selected = option_menu(
         menu_title="Menú Principal",
         options=["Datos", "Gráficos", "Contacto"],
@@ -166,4 +151,3 @@ with st.sidebar:
         menu_icon="cast",
         default_index=0,
     )
-    
