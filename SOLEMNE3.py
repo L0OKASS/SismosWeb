@@ -13,7 +13,7 @@ st.markdown(
     <style>
     /* Fondo del menú lateral */
     [data-testid="stSidebar"] {
-        background: url("https://reqlut2.s3.sa-east-1.amazonaws.com/reqlut-images/uss/logo-original.png?v=65.6");
+        background: url("https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg");
         background-size: cover;
         background-attachment: fixed;
         color: white;
@@ -138,9 +138,9 @@ elif selected == "Contacto":
     st.markdown("### Correo Institucional: lchongv@correo.uss.cl")
     st.markdown("### Correo Personal: lucaschongv69@gmail.com")
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
-
+    
 with st.sidebar:
-    ### Agregar el logo de la universidad ##3
+    ### Agregar el logo de la universidad ###
     st.image("https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Universidad_San_Sebasti%C3%A1n_%28logo%29.png/600px-Universidad_San_Sebasti%C3%A1n_%28logo%29.png", 
              width=200)
     ### Menú principal ###
