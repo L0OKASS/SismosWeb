@@ -13,7 +13,7 @@ st.markdown(
     <style>
     /* Fondo del menú lateral */
     [data-testid="stSidebar"] {
-        background: url("https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg");
+        background: url("https://reqlut2.s3.sa-east-1.amazonaws.com/reqlut-images/uss/logo-original.png?v=65.6");
         background-size: cover;
         background-attachment: fixed;
         color: white;
