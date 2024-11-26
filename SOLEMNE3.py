@@ -1,12 +1,14 @@
 import streamlit as st
+
+# Configuración de la página: debe ir justo después de importar Streamlit.
 st.set_page_config(page_title="Sismos en Chile", layout="wide")
 
+# Resto de las importaciones
 import pandas as pd
 import requests
 import plotly.express as px
 from streamlit_option_menu import option_menu
 
-### Estilo personalizado para la página ###
 page_bg_img = '''
 <style>
 [data-testid="stAppViewContainer"] {
