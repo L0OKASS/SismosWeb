@@ -142,7 +142,7 @@ elif selected == "Contacto":
 with st.sidebar:
     ### Agregar el logo de la universidad ###
     st.image("https://cdn.uss.cl/content/uploads/2022/11/21202549/LOGO-FOOTER-USS.png", 
-             width=200)
+             width=230)
     ### Menú principal ###
     selected = option_menu(
         menu_title="Menú Principal",
