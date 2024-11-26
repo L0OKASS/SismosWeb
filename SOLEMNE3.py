@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(page_title="Sismos en Chile", layout="wide")
+
 import pandas as pd
 import requests
 import plotly.express as px
