@@ -140,7 +140,7 @@ elif selected == "Contacto":
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
 
 with st.sidebar:
-    # Agregar el logo de la universidad con un borde difuso
+    ### Agregar el logo de la universidad con un borde difuso ###
     st.markdown("""
     <style>
     .logo-container {
@@ -155,10 +155,10 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image("https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Universidad_San_Sebasti%C3%A1n_%28logo%29.png/600px-Universidad_San_Sebasti%C3%A1n_%28logo%29.png", width=200)
+    st.image("https://reqlut2.s3.sa-east-1.amazonaws.com/reqlut-images/uss/logo-original.png?v=65.6", width=200)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Menú principal
+    ### Menú principal ###
     selected = option_menu(
         menu_title="Menú Principal",
         options=["Datos", "Gráficos", "Contacto"],
