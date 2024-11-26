@@ -4,10 +4,10 @@ import requests
 import plotly.express as px
 from streamlit_option_menu import option_menu
 
-# Configuración de la página
+### Configuración de la página ###
 st.set_page_config(page_title="Sismos en Chile", layout="wide")
 
-# CSS personalizado
+### CSS personalizado ###
 st.markdown(
     """
     <style>
@@ -41,16 +41,16 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Obtener los datos de la API de sismos
+### Obtener los datos de la API de sismos ###
 url = "https://api.gael.cloud/general/public/sismos"
 response = requests.get(url)
 data = response.json()
 
-# Convertir los datos a un DataFrame
+### Convertir los datos a un DataFrame ###
 df = pd.DataFrame(data)
 df['Fecha'] = pd.to_datetime(df['Fecha'])
 
-# Extraer direcciones y calcular porcentajes
+### Extraer direcciones y calcular porcentajes ###
 def extract_direction(ref):
     directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO']
     for direction in directions:
@@ -67,7 +67,7 @@ direction_df = pd.DataFrame({
     'Porcentaje': direction_percentages.values
 })
 
-# Menú lateral
+### Menú lateral ###
 with st.sidebar:
     selected = option_menu(
         menu_title="Menú Principal",
@@ -77,7 +77,7 @@ with st.sidebar:
         default_index=0,
     )
 
-# Mostrar contenido según la selección
+### Mostrar contenido según la selección ###
 if selected == "Datos":
     st.title("📋 Datos de Sismos")
     st.dataframe(df)
@@ -85,7 +85,7 @@ if selected == "Datos":
 elif selected == "Gráficos":
     st.title("📊 Gráficos de Sismos")
     
-    # Gráfico de barras con degradado de colores
+    ### Gráfico de barras con degradado de colores ###
     st.subheader("🔵 Cantidad de Sismos por Magnitud")
     magnitudes = df['Magnitud'].value_counts().sort_index()
     num_colors = len(magnitudes)
@@ -105,7 +105,7 @@ elif selected == "Gráficos":
     st.plotly_chart(fig_bar, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Gráfico de torta: Direcciones de sismos
+    ### Gráfico de torta: Direcciones de sismos ###
     st.subheader("🧭 Distribución de Direcciones de Sismos")
     fig_pie = px.pie(
         direction_df, 
@@ -119,7 +119,7 @@ elif selected == "Gráficos":
     st.plotly_chart(fig_pie, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Gráfico de dispersión: Magnitud vs Profundidad
+    ### Gráfico de dispersión: Magnitud vs Profundidad ###
     st.subheader("📍 Relación entre Magnitud y Profundidad")
     fig_scatter = px.scatter(
         df, 
@@ -138,3 +138,16 @@ elif selected == "Contacto":
     st.markdown("### Correo Institucional: lchongv@correo.uss.cl")
     st.markdown("### Correo Personal: lucaschongv69@gmail.com")
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
+
+with st.sidebar:
+    ### Agregar el logo de la universidad ##3
+    st.image("https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Universidad_San_Sebasti%C3%A1n_%28logo%29.png/600px-Universidad_San_Sebasti%C3%A1n_%28logo%29.png", 
+             width=200)
+    ### Menú principal ###
+    selected = option_menu(
+        menu_title="Menú Principal",
+        options=["Datos", "Gráficos", "Contacto"],
+        icons=["table", "bar-chart", "envelope"],
+        menu_icon="cast",
+        default_index=0,
+    )
