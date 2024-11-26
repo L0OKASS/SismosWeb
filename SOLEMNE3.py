@@ -155,7 +155,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.image("https://reqlut2.s3.sa-east-1.amazonaws.com/reqlut-images/uss/logo-original.png?v=65.6", width=200)
+    st.image("https://universidadsansebastian.hiringroom.com/data/accounts/universidadsansebastian/microsite/5ed34d01564648ad52c7afd2d49a0909.png", width=200)
     st.markdown('</div>', unsafe_allow_html=True)
 
     ### Menú principal ###
