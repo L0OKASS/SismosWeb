@@ -1,11 +1,9 @@
 streamlit
 pandas
 plotly
+streamlit-option-menu
 #requests
-#pandas
 #matplotlob
-#streamlit
-#streamlit-option-menu
 #-r requirements.txt
 #snowflake-connector-python
 #plotly.express
