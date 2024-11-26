@@ -1,45 +1,43 @@
 import streamlit as st
+
+### Configuración de la página: debe ir justo después de importar Streamlit. ###
+st.set_page_config(page_title="Sismos en Chile", layout="wide")
+
+### Resto de las importaciones ###
 import pandas as pd
 import requests
 import plotly.express as px
 from streamlit_option_menu import option_menu
 
-# Configuración de la página
-st.set_page_config(page_title="Sismos en Chile", layout="wide")
+page_bg_img = '''
+<style>
+[data-testid="stAppViewContainer"] {
+    background: url("https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    opacity: 0.9;
+}
+[data-testid="stSidebar"] {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+h1, h2, h3, .stMarkdown {
+    color: #2c3e50;
+    font-family: 'Arial', sans-serif;
+}
+</style>
+'''
+st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# CSS personalizado para el diseño
-st.markdown(
-    """
-    <style>
-    body {
-        background-image: url('https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg');
-        background-size: cover;
-        background-attachment: fixed;
-        color: #FFFFFF;
-    }
-    .css-18e3th9 {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    .css-1d391kg {
-        color: white;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Obtener los datos de la API de sismos
+### Obtener los datos de la API de sismos ###
 url = "https://api.gael.cloud/general/public/sismos"
 response = requests.get(url)
 data = response.json()
 
-# Convertir los datos a un DataFrame
+### Convertir los datos a un DataFrame ###
 df = pd.DataFrame(data)
-
-# Convertir la columna 'Fecha' a tipo datetime
 df['Fecha'] = pd.to_datetime(df['Fecha'])
 
-# Extraer las direcciones de la columna 'RefGeografica'
+### Extraer direcciones y calcular porcentajes ###
 def extract_direction(ref):
     directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO']
     for direction in directions:
@@ -47,21 +45,16 @@ def extract_direction(ref):
             return direction
     return 'Desconocida'
 
-# Aplicar la extracción de direcciones a la columna 'RefGeografica'
 df['Direccion'] = df['RefGeografica'].apply(extract_direction)
-
-# Calcular el porcentaje de sismos por dirección
 direction_counts = df['Direccion'].value_counts()
 direction_percentages = (direction_counts / len(df) * 100).round(2)
-
-# Crear un DataFrame para las direcciones con sus porcentajes
 direction_df = pd.DataFrame({
     'Direccion': direction_counts.index,
     'Cantidad': direction_counts.values,
     'Porcentaje': direction_percentages.values
 })
 
-# Menú lateral
+### Menú lateral ###
 with st.sidebar:
     selected = option_menu(
         menu_title="Menú Principal",
@@ -71,61 +64,58 @@ with st.sidebar:
         default_index=0,
     )
 
-# Mostrar contenido según la selección
+### Mostrar contenido según la selección ###
 if selected == "Datos":
-    st.title("Datos de Sismos")
-    st.header("Aquí se muestran todos los sismos registrados")
+    st.title("📋 Datos de Sismos")
     st.dataframe(df)
 
 elif selected == "Gráficos":
-    st.title("Gráficos de Sismos")
-    st.header("Análisis Gráfico de los Sismos")
-
-    # Gráfico de barras: Cantidad de sismos por magnitud
-    st.subheader("Cantidad de Sismos por Magnitud")
+    st.title("📊 Gráficos de Sismos")
+    
+    ### Gráfico de barras con degradado de colores ###
+    st.subheader("🔵 Cantidad de Sismos por Magnitud")
     magnitudes = df['Magnitud'].value_counts().sort_index()
-
-    # Crear un degradado de verde a rojo
     num_colors = len(magnitudes)
     colors = [
         f"rgb({int(255 - (255 * i / (num_colors - 1)))}, {int(255 * i / (num_colors - 1))}, 0)"
         for i in range(num_colors)
     ]
-
     fig_bar = px.bar(
-        magnitudes,
-        x=magnitudes.index,
-        y=magnitudes.values,
-        labels={'x': 'Magnitud', 'y': 'Cantidad de Sismos'},
+        magnitudes, 
+        x=magnitudes.index, 
+        y=magnitudes.values, 
+        labels={'x': 'Magnitud', 'y': 'Cantidad de Sismos'}, 
         title="Cantidad de Sismos por Magnitud",
     )
-    fig_bar.update_traces(marker=dict(color=colors))  # Aplicar los colores personalizados
-
+    fig_bar.update_traces(marker=dict(color=colors))
     st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Gráfico de torta: Direcciones con porcentajes
-    st.subheader("Distribución de Direcciones de Sismos")
-    fig_pie = px.pie(direction_df, values='Cantidad', names='Direccion',
-                     title="Direcciones de donde vienen los sismos",
-                     hover_data=['Porcentaje'])
+    ### Gráfico de torta: Direcciones de sismos ###
+    st.subheader("🧭 Distribución de Direcciones de Sismos")
+    fig_pie = px.pie(
+        direction_df, 
+        values='Cantidad', 
+        names='Direccion', 
+        title="Direcciones de los Sismos",
+        hover_data=['Porcentaje']
+    )
     fig_pie.update_traces(textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
 
-    # Gráfico de dispersión: Relación entre magnitud y profundidad
-    st.subheader("Relación entre Magnitud y Profundidad")
+    ### Gráfico de dispersión: Magnitud vs Profundidad ###
+    st.subheader("📍 Relación entre Magnitud y Profundidad")
     fig_scatter = px.scatter(
-        df,
-        x='Magnitud',
-        y='Profundidad',
-        title="Magnitud vs Profundidad",
+        df, 
+        x='Magnitud', 
+        y='Profundidad', 
+        title="Magnitud vs Profundidad (en Km)",
         labels={'Magnitud': 'Magnitud', 'Profundidad': 'Profundidad (Km)'},
-        size=[6] * len(df),  # Tamaño constante de los puntos aumentado
+        size=[4] * len(df)
     )
     st.plotly_chart(fig_scatter, use_container_width=True)
 
 elif selected == "Contacto":
-    st.title("Contacto")
-    st.write("Puedes comunicarte con nosotros a través del correo electrónico.")
+    st.title("📧 Contacto")
+    st.markdown("### Correo Institucional: *lchongv@correo.uss.cl*")
+    st.markdown("### Correo Personal: *lucaschongv69@gmail.com*")
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
-    st.write("Correo Institucional: lchongv@correo.uss.cl")
-    st.write("Correo Personal: lucaschongv69@gmail.com")
