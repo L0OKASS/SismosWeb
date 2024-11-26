@@ -138,3 +138,16 @@ elif selected == "Contacto":
     st.markdown("### Correo Institucional: lchongv@correo.uss.cl")
     st.markdown("### Correo Personal: lucaschongv69@gmail.com")
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
+
+with st.sidebar:
+    ### Agregar el logo de la universidad ###
+    st.image("https://universidadsansebastian.hiringroom.com/data/accounts/universidadsansebastian/microsite/5ed34d01564648ad52c7afd2d49a0909.png", 
+             width=200)
+    ### Menú principal ###
+    selected = option_menu(
+        menu_title="Menú Principal",
+        options=["Datos", "Gráficos", "Contacto"],
+        icons=["table", "bar-chart", "envelope"],
+        menu_icon="cast",
+        default_index=0,
+    )
