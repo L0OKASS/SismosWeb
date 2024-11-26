@@ -1,9 +1,9 @@
 import streamlit as st
 
-# Configuración de la página: debe ir justo después de importar Streamlit.
+### Configuración de la página: debe ir justo después de importar Streamlit. ###
 st.set_page_config(page_title="Sismos en Chile", layout="wide")
 
-# Resto de las importaciones
+### Resto de las importaciones ###
 import pandas as pd
 import requests
 import plotly.express as px
@@ -27,9 +27,6 @@ h1, h2, h3, .stMarkdown {
 </style>
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)
-
-### Configuración inicial de la página ###
-st.set_page_config(page_title="Sismos en Chile", layout="wide")
 
 ### Obtener los datos de la API de sismos ###
 url = "https://api.gael.cloud/general/public/sismos"
