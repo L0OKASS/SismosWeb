@@ -1,43 +1,56 @@
 import streamlit as st
-
-### Configuración de la página: debe ir justo después de importar Streamlit. ###
-st.set_page_config(page_title="Sismos en Chile", layout="wide")
-
-### Resto de las importaciones ###
 import pandas as pd
 import requests
 import plotly.express as px
 from streamlit_option_menu import option_menu
 
-page_bg_img = '''
-<style>
-[data-testid="stAppViewContainer"] {
-    background: url("https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg");
-    background-size: cover;
-    background-attachment: fixed;
-    opacity: 0.9;
-}
-[data-testid="stSidebar"] {
-    background-color: rgba(255, 255, 255, 0.8);
-}
-h1, h2, h3, .stMarkdown {
-    color: #2c3e50;
-    font-family: 'Arial', sans-serif;
-}
-</style>
-'''
-st.markdown(page_bg_img, unsafe_allow_html=True)
+# Configuración de la página
+st.set_page_config(page_title="Sismos en Chile", layout="wide")
 
-### Obtener los datos de la API de sismos ###
+# CSS personalizado
+st.markdown(
+    """
+    <style>
+    /* Fondo del menú lateral */
+    [data-testid="stSidebar"] {
+        background: url("https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg");
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    /* Fondo del contenido principal */
+    [data-testid="stAppViewContainer"] {
+        background-color: #001f3f;
+    }
+
+    /* Títulos y subtítulos con silueta negra */
+    h1, h2, h3 {
+        color: white;
+        text-shadow: 2px 2px 4px black;
+    }
+
+    /* Marcos blancos para gráficos */
+    .plot-container {
+        border: 4px solid white;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Obtener los datos de la API de sismos
 url = "https://api.gael.cloud/general/public/sismos"
 response = requests.get(url)
 data = response.json()
 
-### Convertir los datos a un DataFrame ###
+# Convertir los datos a un DataFrame
 df = pd.DataFrame(data)
 df['Fecha'] = pd.to_datetime(df['Fecha'])
 
-### Extraer direcciones y calcular porcentajes ###
+# Extraer direcciones y calcular porcentajes
 def extract_direction(ref):
     directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO']
     for direction in directions:
@@ -54,7 +67,7 @@ direction_df = pd.DataFrame({
     'Porcentaje': direction_percentages.values
 })
 
-### Menú lateral ###
+# Menú lateral
 with st.sidebar:
     selected = option_menu(
         menu_title="Menú Principal",
@@ -64,7 +77,7 @@ with st.sidebar:
         default_index=0,
     )
 
-### Mostrar contenido según la selección ###
+# Mostrar contenido según la selección
 if selected == "Datos":
     st.title("📋 Datos de Sismos")
     st.dataframe(df)
@@ -72,7 +85,7 @@ if selected == "Datos":
 elif selected == "Gráficos":
     st.title("📊 Gráficos de Sismos")
     
-    ### Gráfico de barras con degradado de colores ###
+    # Gráfico de barras con degradado de colores
     st.subheader("🔵 Cantidad de Sismos por Magnitud")
     magnitudes = df['Magnitud'].value_counts().sort_index()
     num_colors = len(magnitudes)
@@ -88,9 +101,11 @@ elif selected == "Gráficos":
         title="Cantidad de Sismos por Magnitud",
     )
     fig_bar.update_traces(marker=dict(color=colors))
+    st.markdown('<div class="plot-container">', unsafe_allow_html=True)
     st.plotly_chart(fig_bar, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    ### Gráfico de torta: Direcciones de sismos ###
+    # Gráfico de torta: Direcciones de sismos
     st.subheader("🧭 Distribución de Direcciones de Sismos")
     fig_pie = px.pie(
         direction_df, 
@@ -100,9 +115,11 @@ elif selected == "Gráficos":
         hover_data=['Porcentaje']
     )
     fig_pie.update_traces(textinfo='percent+label')
+    st.markdown('<div class="plot-container">', unsafe_allow_html=True)
     st.plotly_chart(fig_pie, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    ### Gráfico de dispersión: Magnitud vs Profundidad ###
+    # Gráfico de dispersión: Magnitud vs Profundidad
     st.subheader("📍 Relación entre Magnitud y Profundidad")
     fig_scatter = px.scatter(
         df, 
@@ -112,10 +129,12 @@ elif selected == "Gráficos":
         labels={'Magnitud': 'Magnitud', 'Profundidad': 'Profundidad (Km)'},
         size=[4] * len(df)
     )
+    st.markdown('<div class="plot-container">', unsafe_allow_html=True)
     st.plotly_chart(fig_scatter, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 elif selected == "Contacto":
     st.title("📧 Contacto")
-    st.markdown("### Correo Institucional: *lchongv@correo.uss.cl*")
-    st.markdown("### Correo Personal: *lucaschongv69@gmail.com*")
+    st.markdown("### Correo Institucional: lchongv@correo.uss.cl")
+    st.markdown("### Correo Personal: lucaschongv69@gmail.com")
     st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
