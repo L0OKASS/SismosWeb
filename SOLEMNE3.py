@@ -12,7 +12,7 @@ st.markdown(
     """
     <style>
     body {
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/3a/Lago_General_Carrera%2C_Chile.jpg');
+        background-image: url('https://images.myguide-cdn.com/chile/companies/san-pedro-de-atacama-valle-de-la-luna-sunset-tour/large/san-pedro-de-atacama-valle-de-la-luna-sunset-tour-1188322.jpg');
         background-size: cover;
         background-attachment: fixed;
         color: #FFFFFF;
