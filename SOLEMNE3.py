@@ -1,99 +1,111 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import requests
+import plotly.express as px
+from streamlit_option_menu import option_menu
 
-# Estilo personalizado para la página
-page_bg_img = '''
-<style>
-[data-testid="stAppViewContainer"] {
-    background: url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Valle_de_la_Luna_San_Pedro_de_Atacama_Chile_Luca_Galuzzi_2006.JPG/1920px-Valle_de_la_Luna_San_Pedro_de_Atacama_Chile_Luca_Galuzzi_2006.JPG");
-    background-size: cover;
-    background-attachment: fixed;
-    opacity: 0.9;
-}
-[data-testid="stSidebar"] {
-    background-color: rgba(255, 255, 255, 0.8);
-}
-h1, h2, h3, .stMarkdown {
-    color: #2c3e50;
-    font-family: 'Arial', sans-serif;
-}
-</style>
-'''
-st.markdown(page_bg_img, unsafe_allow_html=True)
+### Obtener los datos de la API de sismos ###
+url = "https://api.gael.cloud/general/public/sismos"
+response = requests.get(url)
+data = response.json()
 
-# Configuración de la página
-st.set_page_config(page_title="Sismos en Chile", layout="wide")
+### Convertir los datos a un DataFrame ###
+df = pd.DataFrame(data)
 
-# Título principal
-st.title("🌍 Análisis de Sismos en Chile")
-st.markdown("Explora datos de sismos en Chile con gráficos interactivos y un diseño amigable.")
+### Convertir la columna 'Fecha' a tipo datetime ###
+df['Fecha'] = pd.to_datetime(df['Fecha'])
 
-# Cargar datos de la API
-@st.cache
-def obtener_datos():
-    url = "https://api.gael.cloud/general/public/sismos"
-    return pd.DataFrame(pd.json_normalize(requests.get(url).json()))
+### Extraer las direcciones de la columna 'RefGeografica' ###
+def extract_direction(ref):
+    ### Lista de direcciones intercardinales ###
+    directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO']
+    for direction in directions:
+        if direction in ref:
+            return direction
+    return 'Desconocida'
 
-datos = obtener_datos()
+#### Aplicar la extracción de direcciones a la columna 'RefGeografica' ###
+df['Direccion'] = df['RefGeografica'].apply(extract_direction)
 
-# Sidebar con menú
+### Calcular el porcentaje de sismos por dirección ###
+direction_counts = df['Direccion'].value_counts()
+direction_percentages = (direction_counts / len(df) * 100).round(2)
+
+### Crear un DataFrame para las direcciones con sus porcentajes ###
+direction_df = pd.DataFrame({
+    'Direccion': direction_counts.index,
+    'Cantidad': direction_counts.values,
+    'Porcentaje': direction_percentages.values
+})
+
+### Menú lateral ###
 with st.sidebar:
-    opcion = st.radio(
-        "Menú",
-        options=["Datos de Sismos", "Gráficos", "Contacto"]
+    selected = option_menu(
+        menu_title="Menú Principal",
+        options=["Datos", "Gráficos", "Contacto"],
+        icons=["table", "bar-chart", "envelope"],
+        menu_icon="cast",
+        default_index=0,
     )
 
-if opcion == "Datos de Sismos":
-    st.header("📋 Datos de Sismos")
-    st.dataframe(datos)
+### Mostrar contenido según la selección ###
+if selected == "Datos":
+    st.title("Datos de Sismos")
+    st.header("Aquí se muestran todos los sismos registrados")
+    
+    ### Mostrar los datos completos ###
+    st.dataframe(df)
 
-elif opcion == "Gráficos":
-    st.header("📊 Gráficos de Sismos")
+elif selected == "Gráficos":
+    st.title("Gráficos de Sismos")
+    st.header("Análisis Gráfico de los Sismos")
+    
+    ### Gráfico de barras: Cantidad de sismos por magnitud ###
+    st.subheader("Cantidad de Sismos por Magnitud")
+    magnitudes = df['Magnitud'].value_counts().sort_index()
 
-    # Gráfico de barras - Magnitud de los sismos
-    st.subheader("🔵 Magnitud de los sismos")
-    fig_barras = px.bar(
-        datos,
-        x="Magnitud",
-        y="RefGeografica",
-        title="Magnitud por ubicación geográfica",
-        color="Magnitud",
-        color_continuous_scale=px.colors.sequential.Viridis_r
+    ### Crear un degradado de verde a rojo ###
+    num_colors = len(magnitudes)
+    colors = [
+        f"rgb({int(255 * i / (num_colors - 1))}, {int(255 - (255 * i / (num_colors - 1)))}, 0)"
+        for i in range(num_colors)
+    ]
+
+    fig_bar = px.bar(
+        magnitudes, 
+        x=magnitudes.index, 
+        y=magnitudes.values, 
+        labels={'x': 'Magnitud', 'y': 'Cantidad de Sismos'}, 
+        title="Cantidad de Sismos por Magnitud",
     )
-    st.plotly_chart(fig_barras)
+    fig_bar.update_traces(marker=dict(color=colors))  ### Aplicar los colores personalizados ###
 
-    # Gráfico de torta - Direcciones de los sismos
-    st.subheader("🧭 Direcciones de donde vienen")
-    direcciones = datos["RefGeografica"].str.extract(r'(\d+)\s+km\s+al\s+(\w+)')
-    direcciones.columns = ["Distancia", "Direccion"]
-    direcciones["Direccion"] = direcciones["Direccion"].replace({
-        "N": "Norte", "S": "Sur", "E": "Este", "O": "Oeste",
-        "NE": "Noreste", "SE": "Sureste", "NO": "Noroeste", "SO": "Suroeste"
-    })
-    conteo_direcciones = direcciones["Direccion"].value_counts()
-    fig_torta = px.pie(
-        conteo_direcciones,
-        names=conteo_direcciones.index,
-        values=conteo_direcciones.values,
-        title="Distribución de direcciones de los sismos"
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+    ### Gráfico de torta: Direcciones con porcentajes ###
+    st.subheader("Distribución de Direcciones de Sismos")
+    fig_pie = px.pie(direction_df, values='Cantidad', names='Direccion', 
+                     title="Direcciones de donde vienen los sismos",
+                     hover_data=['Porcentaje'])
+    fig_pie.update_traces(textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
+
+    ### Gráfico de dispersión: Relación entre magnitud y profundidad ###
+    st.subheader("Relación entre Magnitud y Profundidad")
+    fig_scatter = px.scatter(
+        df, 
+        x='Magnitud', 
+        y='Profundidad', 
+        title="Magnitud vs Profundidad", 
+        labels={'Magnitud': 'Magnitud', 'Profundidad': 'Profundidad (Km)'},
+        size=[4] * len(df),  ### Tamaño constante de los puntos aumentado ###
     )
-    st.plotly_chart(fig_torta)
+    st.plotly_chart(fig_scatter, use_container_width=True)
 
-    # Gráfico de dispersión - Profundidad y Magnitud
-    st.subheader("📍 Magnitud y Profundidad")
-    fig_dispersion = px.scatter(
-        datos,
-        x="Magnitud",
-        y="Profundidad",
-        size="Magnitud",
-        title="Relación entre Magnitud y Profundidad (en km)",
-        labels={"Profundidad": "Profundidad (km)", "Magnitud": "Magnitud"}
-    )
-    st.plotly_chart(fig_dispersion)
-
-elif opcion == "Contacto":
-    st.header("📧 Contacto")
-    st.markdown("*Correo:* contacto@ejemplo.com")
-    st.image("https://upload.wikimedia.org/wikipedia/commons/8/89/Email_Icon.png", width=50)
+elif selected == "Contacto":
+    st.title("Contacto")
+    st.write("Puedes comunicarte con nosotros a través del correo electrónico.")
+    #### Agregar imagen desde URL ###
+    st.image("https://cdn-icons-png.flaticon.com/512/732/732200.png", width=100)
+    st.write("Correo Institucional: lchongv@correo.uss.cl")
+    st.write("Correo Personal: lucaschongv69@gmail.com")
