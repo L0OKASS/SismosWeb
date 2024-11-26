@@ -12,7 +12,7 @@ from streamlit_option_menu import option_menu
 page_bg_img = '''
 <style>
 [data-testid="stAppViewContainer"] {
-    background: url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Valle_de_la_Luna_San_Pedro_de_Atacama_Chile_Luca_Galuzzi_2006.JPG/1920px-Valle_de_la_Luna_San_Pedro_de_Atacama_Chile_Luca_Galuzzi_2006.JPG");
+    background: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.myguidechile.com%2Fes%2Fexperiencias%2Fsan-pedro-de-atacama-puesta-de-sol-en-el-valle-de-la-luna&psig=AOvVaw2r2hl6w0117ncW1XirXVRU&ust=1732675344872000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLjP-PH8-IkDFQAAAAAdAAAAABAJ");
     background-size: cover;
     background-attachment: fixed;
     opacity: 0.9;
