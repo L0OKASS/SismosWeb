@@ -141,7 +141,7 @@ elif selected == "Contacto":
 
 with st.sidebar:
     # Agregar el logo de la universidad
-    st.image("https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Universidad_San_Sebasti%C3%A1n_%28logo%29.png/600px-Universidad_San_Sebasti%C3%A1n_%28logo%29.png", 
+    st.image("https://universidadsansebastian.hiringroom.com/data/accounts/universidadsansebastian/microsite/5ed34d01564648ad52c7afd2d49a0909.png", 
              width=200)
     # Menú principal
     selected = option_menu(
